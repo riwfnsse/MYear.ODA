@@ -13,7 +13,7 @@
       <Title>MYear.ODA</Title>
       <Copyright>Copyright © Robin.zhu 2020</Copyright>
       <PackageId>MYear.ODA</PackageId>
-      <PackageProjectUrl>https://github.com/riwfnsse/NYear</PackageProjectUrl>
+      <PackageProjectUrl>https://github.com/riwfnsse/MYear.ODA</PackageProjectUrl>
       <Description>MYear.ODA is a high-performance Database Access dynamic-link library for SqlServer / MySql /Oracle /DB2 /SQLite ; It support .Net Framework / .NetCore /.NetStandard </Description>
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)' == 'net40' or '$(TargetFramework)' == 'net46'">
