@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET_FW
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -246,3 +247,4 @@ namespace MYear.ODA.Adapter
         }
     }
 }
+#endif

@@ -101,10 +101,10 @@ namespace MYear.ODA
                 case DbAType.MySql:
                     DBA = new DbAMySql(Connecting);
                     break;
+#if NET_FW
                 case DbAType.OdbcInformix:
                     DBA = new DbAOdbcInformix(Connecting);
-                    break;
-#if FW
+                    break; 
                 case DbAType.OledbAccess:
                     DBA = new DbAOledbAccess(Connecting);
                     break;
@@ -115,11 +115,11 @@ namespace MYear.ODA
                 case DbAType.SQLite:
                     DBA = new DbASQLite(Connecting);
                     break;
-#if FW
+
                 case DbAType.Sybase:
                     DBA = new DbASybase(Connecting);
                     break;
-#endif
+
             }
             return DBA;
         }

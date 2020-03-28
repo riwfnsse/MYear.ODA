@@ -39,8 +39,10 @@ namespace MYear.ODA
     {
         MsSQL,
         MySql,
+#if NET_FW
         OdbcInformix,
         OledbAccess,
+#endif
         Oracle,
         Sybase,
         DB2,
