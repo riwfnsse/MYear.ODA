@@ -1,9 +1,8 @@
 using System;
-using MySql.Data.Types;
 
 namespace MYear.ODA.Model
 {
-	public partial class SYS_DATA_DICTIONARY
+    public partial class SYS_DATA_DICTIONARY
 	{
 		 public string STATUS {get; set;}
 		 public string CREATED_BY {get; set;}

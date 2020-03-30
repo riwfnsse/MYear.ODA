@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MYear.ODA;
 using MYear.ODA.Cmd;
 using MYear.ODA.Model;
-using MYear.ODA;
-using System.Data;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Windows.Forms;
-using System.Globalization;
-using MySql.Data.Types;
+using System;
+using System.Collections.Generic;
 
 namespace MYear.Demo
 {
@@ -75,7 +66,10 @@ namespace MYear.Demo
             return data; 
         }
 
-         
+
+    
+
+
         [Demo(Demo = FuncType.Select, MethodName = "SelectDynamic", MethodDescript = "返回动态数据模型")]
         public static object SelectDynamic()
         {

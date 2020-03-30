@@ -1,8 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MySql.Data.Types;
-using SqlSugar;
 
 namespace MYear.ODA.Model
 {

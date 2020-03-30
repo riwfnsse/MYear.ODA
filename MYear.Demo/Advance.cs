@@ -115,6 +115,8 @@ namespace MYear.Demo
             ODAContext ctx = new ODAContext();
             var sql = ctx.GetCmd<SQLCmd>();
             var data = sql.Select("SELECT * FROM SYS_USER WHERE USER_ACCOUNT = @T1", ODAParameter.CreateParam("@T1","User1"));
+
+            var data1 = sql.Select<DataColumn>(0, 100, "SELECT * FROM SYS_USER WHERE USER_ACCOUNT = @T1","", ODAParameter.CreateParam("@T1", "User1"));
             return data;
         }
 

@@ -23,23 +23,7 @@ namespace MYear.ODA
             {
                 return ((IODACmd)this).GetDBAccess;
             }
-            set
-            {
-                ((IODACmd)this).GetDBAccess = value; 
-            }
         }
-        private Func<string> GetAlias
-        {
-            get
-            {
-                return ((IODACmd)this).GetAlias;
-            }
-            set
-            {
-                ((IODACmd)this).GetAlias = value;
-            }
-        }
-
         public DataTable Select(string Sql, params ODAParameter[] Parameters)
         {
             ODAScript oSql = new ODAScript()
@@ -51,7 +35,21 @@ namespace MYear.ODA
                 oSql.ParamList.AddRange(Parameters);
             var db = GetDBAccess(oSql); 
             return db.Select(oSql.SqlScript.ToString(), oSql.ParamList.ToArray());
-        } 
+        }
+
+        public DataTable Select(int StartIndex, int MaxRecord, string Sql, string OrderBy, params ODAParameter[] Parameters)
+        {
+            ODAScript oSql = new ODAScript()
+            {
+                ScriptType = SQLType.Select
+            };
+            oSql.SqlScript.Append(Sql);
+            if (Parameters != null)
+                oSql.ParamList.AddRange(Parameters);
+            var db = GetDBAccess(oSql);
+            return db.Select(oSql.SqlScript.ToString(), oSql.ParamList.ToArray(), StartIndex, MaxRecord, OrderBy);
+        }
+
         public List<T> Select<T>(string Sql, params ODAParameter[] Parameters) where T : class
         {
             ODAScript oSql = new ODAScript()
@@ -64,6 +62,19 @@ namespace MYear.ODA
             var db = GetDBAccess(oSql);
             return db.Select<T>(oSql.SqlScript.ToString(), oSql.ParamList.ToArray());
         }
+        public virtual List<T> Select<T>(int StartIndex, int MaxRecord, string Sql, string OrderBy, params ODAParameter[] Parameters) where T : class
+        {
+            ODAScript oSql = new ODAScript()
+            {
+                ScriptType = SQLType.Select
+            };
+            oSql.SqlScript.Append(Sql);
+            if (Parameters != null)
+                oSql.ParamList.AddRange(Parameters);
+            var db = GetDBAccess(oSql);
+            return db.Select<T>(Sql, Parameters, StartIndex, MaxRecord, OrderBy);
+        }
+
         public dynamic SelectDynamicFirst(string Sql, params ODAParameter[] Parameters)
         {
             ODAScript oSql = new ODAScript()
