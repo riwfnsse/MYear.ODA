@@ -156,7 +156,7 @@ namespace MYear.ODA.DevTool
 
                 try
                 {
-                    CurrentDatabase.UserProcedures = CurrentDatabase.DataSource.GetUserProcedure();
+                    CurrentDatabase.UserProcedures = CurrentDb.GetUserProcedure();
                 }
                 catch { }
                 CurrentDatabase.DataSource = CurrentDb;

@@ -15,7 +15,7 @@ namespace MYear.ODA
         private static readonly MethodInfo GetBoolean = typeof(IDataRecord).GetMethod("GetBoolean", new Type[] { typeof(int) });
         private static readonly MethodInfo GetByte = typeof(IDataRecord).GetMethod("GetByte", new Type[] { typeof(int) }); 
         private static readonly MethodInfo GetChar = typeof(IDataRecord).GetMethod("GetChar", new Type[] { typeof(int) });
-        private static readonly MethodInfo GetDateTime = typeof(IDataRecord).GetMethod("GetDateTime", new Type[] { typeof(int) });
+        //private static readonly MethodInfo GetDateTime = typeof(IDataRecord).GetMethod("GetDateTime", new Type[] { typeof(int) });
         private static readonly MethodInfo GetDecimal = typeof(IDataRecord).GetMethod("GetDecimal", new Type[] { typeof(int) });
         private static readonly MethodInfo GetDouble = typeof(IDataRecord).GetMethod("GetDouble", new Type[] { typeof(int) });
         private static readonly MethodInfo GetFloat = typeof(IDataRecord).GetMethod("GetFloat", new Type[] { typeof(int) });
@@ -25,6 +25,7 @@ namespace MYear.ODA
         private static readonly MethodInfo GetInt64 = typeof(IDataRecord).GetMethod("GetInt64", new Type[] { typeof(int) });
         private static readonly MethodInfo GetString = typeof(IDataRecord).GetMethod("GetString", new Type[] { typeof(int) });
 
+        private static readonly MethodInfo GetODADateTime = typeof(ODADataReader).GetMethod("GetODADateTime");
         private static readonly MethodInfo GetEnumDigit = typeof(ODADataReader).GetMethod("GetEnumDigit");
         private static readonly MethodInfo GetEnumString = typeof(ODADataReader).GetMethod("GetEnumString");
         private static readonly MethodInfo GetBytes = typeof(ODADataReader).GetMethod("GetBytes");
@@ -166,7 +167,8 @@ namespace MYear.ODA
                 }
                 else if (PptyInfo.UnderlyingType == typeof(DateTime))
                 {
-                    il.Emit(OpCodes.Callvirt, GetDateTime);
+                    // il.Emit(OpCodes.Callvirt, GetODADateTime); 
+                    il.Emit(OpCodes.Call, GetODADateTime);
                 }
                 else if (PptyInfo.UnderlyingType == typeof(decimal))
                 {
