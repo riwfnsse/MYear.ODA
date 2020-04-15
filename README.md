@@ -43,15 +43,15 @@ EF生成的SQL有很多的转换，语句非常复杂，经常走不上索引，
 ### 读取单条数据记录
 Dapper比ODA 略胜一点，但预热时间（第一条）比较长，ODA 比 EF与SqlSugar的优势就很明显了;</br>
 特别是EF相较其他差了好几倍。</br>
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.PerformanceTest/Result/GetById.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/GetById.png)
 
 ### SQL生成性能
 Dapper、没有处功能不作对比；EF 语句生成速度，简直不忍直视。ODA 比 Sqlsugar 好几倍。
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.PerformanceTest/Result/SQL.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/SQL.png)
 
 ### 查询分页
 Dapper、没有处功能不作对比；EF 、ODA、Sqlsugar 性能相差无几。
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.PerformanceTest/Result/Paging.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/Paging.png)
 
 ## 用法示例
 ###  连接数据库
@@ -1138,13 +1138,13 @@ private static void SqlExecutingEvent(string Sql, object[] prms)
 ### ODA开发工具应用
 #### ODA 提供三个工具：<br/>
 第一个当然是 ODA 的代码生成工具了，它生成 ODA 需要的实体类及命令类。<br/>
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.ODA.DevTool/Images/ORM_Tool.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.ODA.DevTool/Images/ORM_Tool.png)
 
 <br/> 第二个是一个简单的 SQL 语句执行工具，可以执行简单的 SQL 语句，对SQLite 等缺少 UI 操作工具的数据库来说是比较实用的。<br/>
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.ODA.DevTool/Images/SQL_Tool.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.ODA.DevTool/Images/SQL_Tool.png)
 
 <br/> 第三个是数据库复制工具，能够在不同数据库之间复制表数据。<br/>
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.ODA.DevTool/Images/DBCopy_Tool.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.ODA.DevTool/Images/DBCopy_Tool.png)
 
 
 
