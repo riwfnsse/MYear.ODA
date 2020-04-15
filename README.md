@@ -38,7 +38,7 @@ EF生成的SQL有很多的转换，语句非常复杂，经常走不上索引，
 ### 数据映射性
 1000000条数据记录，查询出来并转成对应的实体对象。</br>
 相较于EF 、Dapper 和 Sqlsugar，ODA 的性能是最好的  <br/>
- ![image](https://github.com/riwfnsse/NYear/blob/master/MYear.PerformanceTest/Result/ReadData.png)
+ ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/ReadData.png)
 
 ### 读取单条数据记录
 Dapper比ODA 略胜一点，但预热时间（第一条）比较长，ODA 比 EF与SqlSugar的优势就很明显了;</br>
