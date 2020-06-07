@@ -5,7 +5,24 @@ using System.Globalization;
 namespace MYear.ODA
 {
     public static class ODADataReader
-    { 
+    {
+        public static DateTime GetODADateTime(this IDataRecord dr, int i)
+        {
+            object dt = dr.GetValue(i);
+            if (dt is DateTime)
+            {
+                return (DateTime)dt;
+            }
+            else if (dt is MySql.Data.Types.MySqlDateTime)
+            {
+                if (((MySql.Data.Types.MySqlDateTime)dt).IsValidDateTime)
+                {
+                    return ((MySql.Data.Types.MySqlDateTime)dt).GetDateTime();
+                }
+                return new DateTime(1900, 1, 1);
+            }
+            return (DateTime)Convert.ChangeType(dr.GetValue(i), typeof(DateTime), CultureInfo.CurrentCulture);
+        }
         public static object GetEnumDigit(this IDataRecord dr, int i,Type EnumType )
         { 
             return Enum.ToObject(EnumType, dr.GetValue(i));
