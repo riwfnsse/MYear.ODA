@@ -199,128 +199,36 @@ namespace MYear.ODA.DevTool
             return new string[] { strbldr.ToString(), ModelCode.ToString() };
         }
 
-        public string GenerateORMBase(string DBConnectString)
+        public string GenerateContext(params string[] TablesAndViews)
         {
-            StringBuilder OrmBaseStr = new StringBuilder();
-            string DBAstr = " " + _DBA.GetType().FullName + "(@\"" + DBConnectString + "\")";
-            OrmBaseStr.AppendLine("using System;");
-            OrmBaseStr.AppendLine("using System.Data;");
-            OrmBaseStr.AppendLine("using System.Collections.Generic;");
-            OrmBaseStr.AppendLine("using System.Reflection;");
-            OrmBaseStr.AppendLine("using MYear.ODA;");
-            OrmBaseStr.AppendLine("namespace MYear.ODA.Cmd");
-            OrmBaseStr.AppendLine("{");
-            OrmBaseStr.AppendLine(" public abstract class ORMCmd<T> : ODACmd where T : class ");
-            OrmBaseStr.AppendLine(" { ");
-            OrmBaseStr.AppendLine(" public override string ParamsMark { get { return  DBA.ParamsMark; } }");
-            OrmBaseStr.AppendLine(" protected override IDBAccess DBA  { get { return new  " + DBAstr + "; }}");
-            OrmBaseStr.AppendLine(" public virtual long GetSequence() ");
-            OrmBaseStr.AppendLine(" { ");
-            OrmBaseStr.AppendLine("return DBA.GetSequenceNextVal(this.Tran == null ? null : this.Tran.TranID, this.CmdName + \"_SEQ\");");
-            OrmBaseStr.AppendLine("}");
-            OrmBaseStr.AppendLine("  public abstract List<ODAColumns> GetColumnList();");
-            OrmBaseStr.AppendLine("  public List<ODAColumns> BindColumnValues(T Model)");
-            OrmBaseStr.AppendLine(" {");
-            OrmBaseStr.AppendLine("     PropertyInfo[] Pis = Model.GetType().GetProperties();");
-            OrmBaseStr.AppendLine("    List<ODAColumns> Cs = GetColumnList();");
-            OrmBaseStr.AppendLine("    List<ODAColumns> CList = new List<ODAColumns>();");
-            OrmBaseStr.AppendLine("    foreach (PropertyInfo Pi in Pis)");
-            OrmBaseStr.AppendLine("  {");
-            OrmBaseStr.AppendLine("        object V = Pi.GetValue(Model, null);");
-            OrmBaseStr.AppendLine("       if (V != DBNull.Value && V != null)");
-            OrmBaseStr.AppendLine("            foreach (ODAColumns C in Cs)");
-            OrmBaseStr.AppendLine("             if (C.ColumnName == Pi.Name)");
-            OrmBaseStr.AppendLine("               {");
-            OrmBaseStr.AppendLine("                   C.SetCondition(CmdConditionSymbol.EQUAL, V);");
-            OrmBaseStr.AppendLine("                    CList.Add(C);");
-            OrmBaseStr.AppendLine("               }");
-            OrmBaseStr.AppendLine("  }");
-            OrmBaseStr.AppendLine("     return CList;");
-            OrmBaseStr.AppendLine("  }");
-            OrmBaseStr.AppendLine("public List<T> SelectM(params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return base.Select<T>(Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public List<T> SelectM(int StartIndex, int MaxRecord, out int TotalRecord, params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine(" return base.Select<T>(StartIndex, MaxRecord, out  TotalRecord, Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public bool Insert(T Model)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine(" return Insert(BindColumnValues(Model).ToArray());");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public bool Update(T Model)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return Update(BindColumnValues(Model).ToArray());");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> Distinct");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("get{_Distinct = true;return this;}");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> ListCmd(params ODACmd[] Cmds)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.ListCmd(Cmds);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> LeftJoin(ODACmd JoinCmd, params ODAColumns[] On)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.LeftJoin(JoinCmd, On);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> InnerJoin(ODACmd JoinCmd, params ODAColumns[] On)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.InnerJoin(JoinCmd, On);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> StartWithConnectBy(string StartWithExpress, string ConnectByParent, string PriorChild, string ConnectColumn, string ConnectStr, int MaxLevel)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.StartWithConnectBy(StartWithExpress, ConnectByParent, PriorChild, ConnectColumn, ConnectStr, MaxLevel);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> OrderbyAsc(params ODAColumns[] ColumnNames)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.OrderbyAsc(ColumnNames);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> OrderbyDesc(params ODAColumns[] ColumnNames)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.OrderbyDesc(ColumnNames);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> Groupby(params ODAColumns[] ColumnNames)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.Groupby(ColumnNames);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> Having(params ODAColumns[] Params)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.Having(Params);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine(" public new ORMCmd<T> Where(params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.Where(Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ORMCmd<T> Or(params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{ ");
-            OrmBaseStr.AppendLine("return (ORMCmd<T>)base.Or(Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine("public new ODAParameter[] GetCountSql(out string CountSql, ODAColumns Col)");
-            OrmBaseStr.AppendLine("{");
-            OrmBaseStr.AppendLine("return base.GetCountSql(out CountSql, Col);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine(" public new ODAParameter[] GetSelectSql(out string SelectSql, params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{");
-            OrmBaseStr.AppendLine("    return base.GetSelectSql(out SelectSql, Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine(" public new ODAParameter[] GetUpdateSql(out string Sql, params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{");
-            OrmBaseStr.AppendLine("    return base.GetUpdateSql(out Sql, Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine(" public new ODAParameter[] GetInsertSql(out string Sql, params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine("{");
-            OrmBaseStr.AppendLine("    return base.GetInsertSql(out Sql, Cols);");
-            OrmBaseStr.AppendLine(" }");
-            OrmBaseStr.AppendLine(" public new ODAParameter[] GetDeleteSql(out string Sql, params ODAColumns[] Cols)");
-            OrmBaseStr.AppendLine(" {");
-            OrmBaseStr.AppendLine("    return base.GetDeleteSql(out Sql, Cols);");
-            OrmBaseStr.AppendLine("  }");
-            OrmBaseStr.AppendLine("}");
-            OrmBaseStr.AppendLine("}");
+            System.Text.StringBuilder ctxStr = new System.Text.StringBuilder();
 
-            return OrmBaseStr.ToString();
-        }
+            ctxStr.AppendLine("using MYear.ODA;");
+            ctxStr.AppendLine("using MYear.ODA.Cmd;");
+            ctxStr.AppendLine();
+            ctxStr.AppendLine("namespace MYear.ODA.Ctx");
+            ctxStr.AppendLine("{");
+             
+            ctxStr.AppendLine("\tinternal static class BizContext");
+            ctxStr.AppendLine("\t{");
+
+            ctxStr.AppendLine("\t\tinternal static ODAContext GetContext()");
+            ctxStr.AppendLine("\t\t{");
+            ctxStr.AppendLine("\t\t\treturn new ODAContext(DbAType." + Enum.GetName(typeof(DbAType), _DBA.DBAType) + ",\"" + _DBA.ConnString + "\");");
+            ctxStr.AppendLine("\t\t}");
+
+
+            for (int i = 0; i < TablesAndViews.Length; i++)
+            {
+                string cmd = "Cmd" + Pascal(TablesAndViews[i]);
+                ctxStr.AppendLine("\t\tinternal static " + cmd + " " + TablesAndViews[i] + "(this ODAContext Ctx)");
+                ctxStr.AppendLine("\t\t{");
+                ctxStr.AppendLine("\t\t\treturn Ctx.GetCmd<" + cmd + ">();");
+                ctxStr.AppendLine("\t\t}"); 
+            }
+            ctxStr.AppendLine("\t}");
+            ctxStr.AppendLine("}");
+            return ctxStr.ToString();
+        } 
     }
 }

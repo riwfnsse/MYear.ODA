@@ -32,6 +32,9 @@ namespace MYear.ODA.DevTool
 
             this.rtbx_code.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy("C#");
             this.rtbx_code.Encoding = Encoding.GetEncoding("UTF-8");
+
+            this.rtbxCtx.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy("C#");
+            this.rtbxCtx.Encoding = Encoding.GetEncoding("UTF-8");
         }
         protected override void OnClosed(EventArgs e)
         {
@@ -62,10 +65,14 @@ namespace MYear.ODA.DevTool
                 creat[i] = this.ckbx_databaseobject.CheckedItems[i].ToString();
                 tranSeq += ",\"" + creat[i] + "\"";
             }
-            CodeGenerator codeGen = new CodeGenerator(CurrentDatabase.DataSource); 
+            CodeGenerator codeGen = new CodeGenerator(CurrentDatabase.DataSource);
+            this.rtbxCtx.Text = codeGen.GenerateContext(creat);
             string[] Code = codeGen.Generate_Code(creat);
+
             this.rtbx_code.Text = Code[0];
             this.rtbxModel.Text = Code[1];
+
+
             this.tbc_databaseinfo.SelectedTab = this.tpgCommand;
         }
 
