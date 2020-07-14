@@ -15,7 +15,7 @@
       <PackageProjectUrl>https://github.com/riwfnsse/MYear.ODA</PackageProjectUrl>
       <Description>MYear.ODA is a high-performance ORM component for SqlServer / MySql /Oracle / DB2 /SQLite ;  It support .Net Framework / .NetCore /.NetStandard </Description>
       <RepositoryUrl>https://github.com/riwfnsse/MYear.ODA</RepositoryUrl>
-      <Version>1.7.3</Version>
+      <Version>1.7.4</Version>
       <PackageReleaseNotes>MYear.ODA is a high-performance ORM component for SqlServer / MySql /Oracle / DB2 /SQLite ;  It support .Net Framework / .NetCore /.NetStandard</PackageReleaseNotes>
       <PackageTags>orm asp.net .netcore .netstandard SqlServer MySql  Oracle  DB2 SQLite</PackageTags>
       <AssemblyVersion>1.7.1.0</AssemblyVersion>
