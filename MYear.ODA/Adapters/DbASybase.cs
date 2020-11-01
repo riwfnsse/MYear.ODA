@@ -139,16 +139,26 @@ namespace MYear.ODA.Adapter
 #if NET_FW
         public override bool Import(DataTable Data,ODAParameter[] Prms)
         {
+            AseBulkCopy sqlbulkcopy = null;
+            IDbConnection conn = null;
             DataTable ImportData = Data.Copy();
-            IDbCommand Cmd = OpenCommand();
             try
             {
-                AseBulkCopy sqlbulkcopy = new AseBulkCopy((AseConnection)Cmd.Connection);
+                if (this.Transaction == null)
+                {
+                    conn = this.GetConnection();
+                    sqlbulkcopy = new AseBulkCopy((AseConnection)conn, AseBulkCopyOptions.KeepIdentity | AseBulkCopyOptions.KeepNulls | AseBulkCopyOptions.TableLock | AseBulkCopyOptions.UseInternalTransaction, null);
+                }
+                else
+                {
+                    sqlbulkcopy = new AseBulkCopy((AseConnection)this.Transaction.Connection, AseBulkCopyOptions.KeepIdentity | AseBulkCopyOptions.KeepNulls | AseBulkCopyOptions.TableLock, (AseTransaction)this.Transaction);
+                }
+
                 for (int i = 0; i < Prms.Length; i++)
                 {
-                    if (ImportData.Columns.Contains(Prms[i].ParamsName))
+                    if (ImportData.Columns.Contains(Prms[i].ColumnName))
                     {
-                        AseBulkCopyColumnMapping colMap = new AseBulkCopyColumnMapping(ImportData.Columns[i].ColumnName, Prms[i].ParamsName);
+                        AseBulkCopyColumnMapping colMap = new AseBulkCopyColumnMapping(Prms[i].ColumnName, Prms[i].ParamsName);
                         sqlbulkcopy.ColumnMappings.Add(colMap);
                     }
                 }
@@ -160,9 +170,22 @@ namespace MYear.ODA.Adapter
                 sqlbulkcopy.Close();
                 return true;
             }
+            catch (Exception ex)
+            {
+                throw new ODAException(202, string.Format("Import data into table [{0}] error:{1}", ImportData.TableName, ex.Message));
+            }
             finally
             {
-                CloseCommand(Cmd);
+                if (conn != null)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+                if (sqlbulkcopy != null)
+                {
+                    sqlbulkcopy.Close();
+                    sqlbulkcopy = null;
+                }
             }
         }
 #endif

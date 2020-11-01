@@ -167,7 +167,7 @@ namespace MYear.ODA.Adapter
             DataTable Dt = this.Select(PrimaryCols, null);
 
             Dictionary<string, string[]> pkeys = new Dictionary<string, string[]>();
-            string tbName = "";
+            string tbName ;
             if (Dt != null && Dt.Rows.Count > 0)
             {
                 tbName = Dt.Rows[0]["TABLE_NAME"].ToString();
@@ -284,26 +284,26 @@ namespace MYear.ODA.Adapter
                 if (this.Transaction == null)
                 {
                     conn = this.GetConnection();
-                    sqlbulkcopy = new SqlBulkCopy((SqlConnection)conn);
+                    sqlbulkcopy = new SqlBulkCopy((SqlConnection)conn, SqlBulkCopyOptions.KeepIdentity| SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction,null);
                 }
                 else
                 {
-                    sqlbulkcopy = new SqlBulkCopy((SqlConnection)this.Transaction.Connection, SqlBulkCopyOptions.Default, (SqlTransaction)this.Transaction);
+                    sqlbulkcopy = new SqlBulkCopy((SqlConnection)this.Transaction.Connection, SqlBulkCopyOptions.KeepIdentity | SqlBulkCopyOptions.KeepNulls | SqlBulkCopyOptions.TableLock , (SqlTransaction)this.Transaction);
                 }
 
                 for (int i = 0; i < Prms.Length; i++)
                 {
-                    if (ImportData.Columns.Contains(Prms[i].ParamsName))
+                    if (ImportData.Columns.Contains(Prms[i].ColumnName))
                     {
-                        SqlBulkCopyColumnMapping colMap = new SqlBulkCopyColumnMapping(Prms[i].ParamsName, Prms[i].ParamsName);
+                        SqlBulkCopyColumnMapping colMap = new SqlBulkCopyColumnMapping(Prms[i].ColumnName, Prms[i].ParamsName);
                         sqlbulkcopy.ColumnMappings.Add(colMap);
                     }
                 }
-                sqlbulkcopy.BulkCopyTimeout = 600000;
+                sqlbulkcopy.BulkCopyTimeout = 0;
                 //需要操作的数据库表名  
                 sqlbulkcopy.DestinationTableName = ImportData.TableName;
                 //将内存表表写入  
-                sqlbulkcopy.WriteToServer(ImportData);
+                sqlbulkcopy.WriteToServer(ImportData); 
                 return true;
             }
             catch (Exception ex)
