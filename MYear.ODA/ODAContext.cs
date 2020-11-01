@@ -1,30 +1,30 @@
-﻿/*======================================================================================================
- * 分库：
- * 分库是为了减少单个数据库压力而分开多个数据库存储和处理多个系统或模块数据的方法，是业务逻辑的分割，即业务分库。
- * 分库的技术限制：
- * 1.不能跨库强关连。
- *    分库是为了提高性能，但跨库强关连性能十分低下（例:oracle的dblink)
- *    技术实现难度太大，只能从各个库中作数查询足够完整的数据然后在内存中连接筛选，耗费资源太多，得不偿失。
- * 2.分布式事务很难做，应用服务器（ODA）做不到，所以在应用服务上不能有跨库事务，跨库事务一般都是数据库层面考虑。
- *    目前的分布式事务解决方案是数据库的二阶段提交（PreCommit、doCommit）或三阶段提交（CanCommit、PreCommit、doCommit）。
- *    除此之外还可以业务结合技术考虑,如：
- *    同一个事务内的表各自增加一个事务表，把事务数据（原数据及新数据）暂存到事务表，以备回滚和提交（CanCommit、PreCommit），
- *    提交或回滚时(DoCommit)再从事务表更新数据到业务表。
+/*======================================================================================================
+ * �ֿ⣺
+ * �ֿ���Ϊ�˼��ٵ������ݿ�ѹ�����ֿ�������ݿ�洢�ʹ������ϵͳ��ģ�����ݵķ�������ҵ���߼��ķָ��ҵ��ֿ⡣
+ * �ֿ�ļ������ƣ�
+ * 1.���ܿ��ǿ������
+ *    �ֿ���Ϊ��������ܣ������ǿ��������ʮ�ֵ��£���:oracle��dblink)
+ *    ����ʵ���Ѷ�̫��ֻ�ܴӸ�������������ѯ�㹻����������Ȼ�����ڴ�������ɸѡ���ķ���Դ̫�࣬�ò���ʧ��
+ * 2.�ֲ�ʽ�����������Ӧ�÷�������ODA����������������Ӧ�÷����ϲ����п�����񣬿������һ�㶼�����ݿ���濼�ǡ�
+ *    Ŀǰ�ķֲ�ʽ���������������ݿ�Ķ��׶��ύ��PreCommit��doCommit�������׶��ύ��CanCommit��PreCommit��doCommit����
+ *    ����֮�⻹����ҵ���ϼ�������,�磺
+ *    ͬһ�������ڵı���������һ������������������ݣ�ԭ���ݼ������ݣ��ݴ浽��������Ա��ع����ύ��CanCommit��PreCommit����
+ *    �ύ��ع�ʱ(DoCommit)�ٴ�������������ݵ�ҵ�����
  *
- * 数据库集群（读写分离或者说是主从数据库）：
- * 提高系统响应速度的纯技术方案，以空间换速度。对业务透明，付带效果是容灾备份但增加维护复杂度及成本。
- *   从数据库的数量不是越多越好，也是有约束的，约束如下（只是理论值，不考虑网络且数据库硬用性能都一样) 
- *   如测定一个数据库一秒内的最大吞吐量：reads + 2×writes = 1200,90%读10%写,writes = 2* reads(写耗时是读的两倍)
- *   则从服务器最大数量：reads/9 = writes / (N + 1) （N 从服务器最大数量)
+ * ���ݿ⼯Ⱥ����д�������˵���������ݿ⣩��
+ * ���ϵͳ��Ӧ�ٶȵĴ������������Կռ任�ٶȡ���ҵ��͸��������Ч�������ֱ��ݵ�����ά�����Ӷȼ��ɱ���
+ *   �����ݿ����������Խ��Խ�ã�Ҳ����Լ���ģ�Լ�����£�ֻ������ֵ�����������������ݿ�Ӳ�����ܶ�һ��) 
+ *   ��ⶨһ�����ݿ�һ���ڵ������������reads + 2��writes = 1200,90%��10%д,writes = 2* reads(д��ʱ�Ƕ�������)
+ *   ��ӷ��������������reads/9 = writes / (N + 1) ��N �ӷ������������)
  *   
- * 分表：
- * 分表是为了提高单个功能的响应速度，而进行的数据存储结构优化方案。
- *  1.水平分表(按数据内容分表)，与分区表原理相同；
- *     ODA分表方式：一个主视图（一般为物化视图)以及多个子物理表。
+ * �ֱ���
+ * �ֱ���Ϊ����ߵ������ܵ���Ӧ�ٶȣ������е����ݴ洢�ṹ�Ż�������
+ *  1.ˮƽ�ֱ�(���������ݷֱ�)���������ԭ����ͬ��
+ *     ODA�ֱ���ʽ��һ������ͼ��һ��Ϊ�ﻯ��ͼ)�Լ��������������
  *  
- *  2.垂直分表（按字段分表)，一般不作此类分表，因为这样分表对常规的查询有反作用（增加复杂性、降低查询速度)；
- *     但有一些大字段如 Blob、Clob字段或冷热不均的数据（标题、作者、分类、文章内容与浏览量、回复数等统计信息)
- *     为了提高表的处理速度和减少对大字段操作或为了做缓存而垂直分割。
+ *  2.��ֱ�ֱ������ֶηֱ�)��һ�㲻������ֱ�����Ϊ�����ֱ��Գ���Ĳ�ѯ�з����ã����Ӹ����ԡ����Ͳ�ѯ�ٶ�)��
+ *     ����һЩ���ֶ��� Blob��Clob�ֶλ����Ȳ��������ݣ����⡢���ߡ����ࡢ������������������ظ�����ͳ����Ϣ)
+ *     Ϊ����߱��Ĵ����ٶȺͼ��ٶԴ��ֶβ�����Ϊ�����������ֱ�ָ
  ========================================================================================================*/
 
 using MYear.ODA.Adapter;
@@ -39,11 +39,11 @@ using System.Timers;
 namespace MYear.ODA
 {
     /// <summary>
-    /// 数据库访问上下文
+    /// ���ݿ����������
     /// </summary>
     public class ODAContext
     {
-        #region 数据库连接管理
+        #region ���ݿ����ӹ���
         public static ODAConfiguration ODAConfig { get; private set; }
         public static void SetODAConfig(DbAType DbType, string ConectionString)
         {
@@ -104,7 +104,7 @@ namespace MYear.ODA
 #if NET_FW
                 case DbAType.OdbcInformix:
                     DBA = new DbAOdbcInformix(Connecting);
-                    break; 
+                    break;
                 case DbAType.OledbAccess:
                     DBA = new DbAOledbAccess(Connecting);
                     break;
@@ -125,11 +125,11 @@ namespace MYear.ODA
         }
         #endregion
         /// <summary>
-        /// 新建ODAContext产生的ODA连接实例
+        /// �½�ODAContext������ODA����ʵ��
         /// </summary>
         private ODAConnect _Conn = null;
         /// <summary>
-        ///  ODA连接实例由配置文件中生产
+        ///  ODA����ʵ���������ļ�������
         /// </summary>
         private bool _IsConfig = false;
         public ODAContext()
@@ -150,12 +150,12 @@ namespace MYear.ODA
             _IsConfig = false;
         }
         /// <summary>
-        /// 数据库当前的时间
+        /// ���ݿ⵱ǰ��ʱ��
         /// </summary>
         public DateTime DBDatetime
         {
             get
-            {   /////第一次取数据库时间,并保存与本地的时间差异,下一次取本地时间
+            {   /////��һ��ȡ���ݿ�ʱ��,�������뱾�ص�ʱ�����,��һ��ȡ����ʱ��
                 if (_DBTimeDiff == null)
                 {
                     if (!_IsConfig)
@@ -192,10 +192,10 @@ namespace MYear.ODA
         }
 
         /// <summary>
-        /// 获取当前数据库访问上下文的访问命令实列
+        /// ��ȡ��ǰ���ݿ���������ĵķ�������ʵ��
         /// </summary>
-        /// <typeparam name="U">命令类型</typeparam>
-        /// <param name="Schema">别名</param>
+        /// <typeparam name="U">��������</typeparam>
+        /// <param name="Schema">����</param>
         /// <returns></returns>
         public virtual U GetCmd<U>(string Schema = "") where U : IODACmd, new()
         {
@@ -209,23 +209,23 @@ namespace MYear.ODA
             return cmd;
         }
 
-        #region 事务管理
+        #region �������
         private ODATransaction _Tran = null;
         /// <summary>
-        /// 指示是否已启动了事务
+        /// ָʾ�Ƿ�������������
         /// </summary>
         public bool IsTransactionBegined { get { return _Tran != null; } }
         /// <summary>
-        /// 开启事务，默认30秒超时
+        /// ��������Ĭ��30�볬ʱ
         /// </summary>
         public virtual void BeginTransaction()
         {
             BeginTransaction(30);
         }
         /// <summary>
-        /// 开启事务
+        /// ��������
         /// </summary>
-        /// <param name="TimeOut">事务超时时长，小于或等于0时事务不会超时,单位:秒</param>
+        /// <param name="TimeOut">����ʱʱ����С�ڻ����0ʱ���񲻻ᳬʱ,��λ:��</param>
         /// <returns></returns>
         public virtual void BeginTransaction(int TimeOut)
         {
@@ -244,7 +244,7 @@ namespace MYear.ODA
             });
         }
         /// <summary>
-        /// 提交事务
+        /// �ύ����
         /// </summary>
         public void Commit()
         {
@@ -264,7 +264,7 @@ namespace MYear.ODA
             }
         }
         /// <summary>
-        /// 回滚事务
+        /// �ع�����
         /// </summary>
         public void RollBack()
         {
@@ -284,12 +284,12 @@ namespace MYear.ODA
             }
         }
         /// <summary>
-        /// 防止死锁，检查事务对象的顺序
+        /// ��ֹ�����������������˳��
         /// </summary>
         /// <param name="Cmd"></param>
         protected void CheckTransaction(ODAScript Cmd)
         {
-            if (ODAConfig.RegularObject != null && ODAConfig.RegularObject.Length > 0)
+            if (ODAConfig != null && ODAConfig.RegularObject != null && ODAConfig.RegularObject.Length > 0)
             {
                 if (_Tran == null || _Tran.CurrentObject == null)
                     return;
@@ -318,7 +318,7 @@ namespace MYear.ODA
         }
         #endregion
 
-        #region 库数据路由算法 
+        #region ������·���㷨 
         private ODAConnect GetConnect(ODAScript ODASql)
         {
             if (!_IsConfig)
@@ -341,7 +341,7 @@ namespace MYear.ODA
                                 return ODAConfig.DispersedDataBase[curDt];
                             }
                         }
-                        ///没有找到从数据库则返回主数据库
+                        ///û���ҵ������ݿ��򷵻������ݿ�
                         return ODAConfig.ODADataBase;
                     case ODAPattern.Dispersed:
                         if (string.IsNullOrWhiteSpace(ODASql.DataBaseId))
@@ -364,8 +364,8 @@ namespace MYear.ODA
         }
 
         /// <summary>
-        /// 分库路由器,如果操作存在事务,返回的DB连接已在事务中
-        /// 数据库主从集群
+        /// �ֿ�·����,���������������,���ص�DB��������������
+        /// ���ݿ����Ӽ�Ⱥ
         /// </summary>
         /// <param name="ODASql"></param> 
         /// <returns></returns>
@@ -396,7 +396,7 @@ namespace MYear.ODA
         }
 
         #endregion
-        #region SQL语句执行。（待扩展：使用消息队列实现多数据实时同步）
+        #region SQL���ִ�С�������չ��ʹ����Ϣ����ʵ�ֶ�����ʵʱͬ����
         private static event ODASqlEventHandler _CurrentExecutingODASql;
         public static event ODASqlEventHandler CurrentExecutingODASql
         {
@@ -409,7 +409,7 @@ namespace MYear.ODA
                         if (dl.Method == value.Method)
                             return;
                 }
-                _CurrentExecutingODASql += value; 
+                _CurrentExecutingODASql += value;
             }
             remove
             {
@@ -442,7 +442,7 @@ namespace MYear.ODA
         private void FireODASqlEvent(ExecuteEventArgs args)
         {
             LastODASQL = args.SqlParams;
-            _CurrentExecutingODASql?.Invoke(this, args); 
+            _CurrentExecutingODASql?.Invoke(this, args);
         }
 
         private void ExecutingCommand(IDbCommand AdoCmd)
@@ -481,9 +481,9 @@ namespace MYear.ODA
             string debugSql = Sql;
             if (prms != null)
             {
-                foreach (object  op in prms)
+                foreach (object op in prms)
                 {
-                    DbParameter p = op as DbParameter; 
+                    DbParameter p = op as DbParameter;
                     if (p.Value != null)
                     {
                         string ParamsValue = p.Value.ToString();
@@ -520,8 +520,8 @@ namespace MYear.ODA
                             case DbType.Boolean:
                             case DbType.Object:
                                 ParamsValue = "'" + ParamsValue + "'";
-                                break; 
-                        } 
+                                break;
+                        }
                         System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex("(" + ParamsName + "\\b|\\t)");
                         debugSql = rgx.Replace(debugSql, ParamsValue);
                     }
@@ -539,7 +539,7 @@ namespace MYear.ODA
             {
                 DBA = DBA,
                 SqlParams = ODASql,
-            }; 
+            };
             FireODASqlEvent(arg);
             return arg.DBA;
         }
