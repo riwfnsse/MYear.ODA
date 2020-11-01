@@ -282,7 +282,6 @@ namespace MYear.ODA
             {
                 Cmd = this.Transaction.Connection.CreateCommand();
                 Cmd.Transaction = this.Transaction;
-                return Cmd;
             }
             else
             {

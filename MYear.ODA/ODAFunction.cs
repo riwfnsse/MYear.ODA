@@ -154,8 +154,19 @@ namespace MYear.ODA
             _FuncName = ""; 
             return this;
         }
+
+        public ODAColumns Case(ODAColumns CaseColumn, object DefVal, params object[] WhenThen)
+        {
+            if (WhenThen == null || WhenThen.Length % 2 != 0)
+                throw new ODAException(40008, "Case Method ,params [KeyValue] duable case ");
+            Dictionary<object, object> TrueVale = new Dictionary<object, object>();
+            for (int i = 0; i < WhenThen.Length; i += 2)
+                TrueVale.Add(WhenThen[i], WhenThen[i + 1]);
+            return this.Case(CaseColumn, TrueVale, DefVal);
+        }
+
         /// <summary>
-        /// 查询语句 case 函数
+        /// 查询语句 CaseWhen 函数
         /// </summary>
         /// <param name="WhenThen">当 key 条件成立时，则使用 value 值</param>
         /// <param name="ElseVal">当所有 WhenThen 的 key 条件不成立时，则使用ElseVal值</param>
@@ -169,7 +180,27 @@ namespace MYear.ODA
             _FuncType = Func.CaseWhen;
             _FuncName = "";
             return this;
-        } 
+        }
+        public ODAColumns CaseWhen(object DefVal, params object[] WhenThen )
+        {
+            if (WhenThen == null || WhenThen.Length % 2 != 0)
+                throw new ODAException(40009, "CaseWhen Method ,params [WhenThen] duable case ");
+            Dictionary<ODAColumns, object> TrueVale = new Dictionary<ODAColumns, object>();
+            for (int i = 0; i < WhenThen.Length; i += 2)
+            {
+                if (WhenThen[i] is ODAColumns)
+                {
+                    TrueVale.Add((ODAColumns)WhenThen[i], WhenThen[i + 1]);
+                }
+                else
+                {
+                    throw new ODAException(40009, "CaseWhen Method ,params WhenThen " + i + "should be ODAColumns type");
+                }
+            }
+            return this.CaseWhen(WhenThen, DefVal);
+        }
+
+
         public ODAColumns NullDefault(ODAColumns Col, object DefVal)
         {
             Dictionary<ODAColumns, object> WhenThen = new Dictionary<ODAColumns, object>();

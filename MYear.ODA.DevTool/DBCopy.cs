@@ -244,7 +244,7 @@ namespace MYear.ODA.DevTool
                 BackgroundWorker bgw = sender as BackgroundWorker;
 
                 StringBuilder tblScript = new StringBuilder();
-                string TargetDB = prm.TargetDB.DBAType.ToString();
+                string TargetDB = prm.TargetDB.DBAType.ToString(); 
 
                 var TblPkeys = prm.SourceDB.GetPrimarykey();
 
@@ -263,7 +263,7 @@ namespace MYear.ODA.DevTool
                     if (drs == null || drs.Length == 0)
                         continue;
                     DBColumnInfo[] ColumnInfo = new DBColumnInfo[drs.Length];
-                    ODAParameter[] Oprms = new ODAParameter[drs.Length];
+                   
 
                     bool isBigData = false; 
                     try
@@ -287,28 +287,6 @@ namespace MYear.ODA.DevTool
                             CurrentDatabase.GetTargetsType(prm.SourceDB.DBAType.ToString(), TargetDB, ref DBColInfo);
                             ColumnInfo[j] = DBColInfo;
                             isBigData = isBigData || DBColInfo.IsBigData;
-
-                            DBColumnInfo ODAColInfo = new DBColumnInfo()
-                            {
-                                ColumnName = ColumnName,
-                                ColumnType = drs[j]["DATATYPE"].ToString().Trim(),
-                                Length = length,
-                                Scale = Scale,
-                                NotNull = drs[j]["NOT_NULL"].ToString().Trim().ToUpper() == "Y",
-                            };
-                            CurrentDatabase.GetTargetsType(prm.SourceDB.DBAType.ToString(), "ODA", ref ODAColInfo);
-                            ODAdbType OdaType = ODAdbType.OVarchar;
-
-                            OdaType = (ODAdbType)Enum.Parse(typeof(ODAdbType), ODAColInfo.ColumnType, true);
-
-                            Oprms[j] = new ODAParameter()
-                            {
-                                ColumnName = drs[j]["COLUMN_NAME"].ToString(),
-                                DBDataType = OdaType,
-                                Direction = ParameterDirection.Input,
-                                ParamsName = drs[j]["COLUMN_NAME"].ToString(),
-                                Size = ColumnInfo[j].Length
-                            };
                         }
                     }
                     catch (Exception ex)
@@ -342,7 +320,7 @@ namespace MYear.ODA.DevTool
                             }
                             catch { }
                             prm.TargetDB.ExecuteSQL(sql.ToString(), null);
-                        }
+                        } 
                         ReportStatus RST = new ReportStatus()
                         {
                             Percent = (i + 1) * 100 / prm.TranTable.Count,
@@ -360,6 +338,36 @@ namespace MYear.ODA.DevTool
                     {
                         if (prm.NeedTransData)
                         {
+                            var trgCol =    prm.TargetDB.GetTableColumns().Select("TABLE_NAME ='" + prm.TranTable[i] + "'"); 
+                            ODAParameter[] Oprms = new ODAParameter[trgCol.Length];
+                            for (int j = 0; j < trgCol.Length; j++)
+                            {
+                                int collng = 2000;
+                                int.TryParse(trgCol[j]["LENGTH"].ToString().Trim(), out collng);
+                                DBColumnInfo ODAColInfo = new DBColumnInfo()
+                                {
+                                    ColumnName = trgCol[j]["COLUMN_NAME"].ToString(),
+                                    ColumnType = trgCol[j]["DATATYPE"].ToString().Trim(),
+                                    Length = collng,
+                                    IsBigData = isBigData,
+                                    NoLength = false,
+                                    Scale = 0,
+                                    NotNull = false
+                                };
+
+                                CurrentDatabase.GetTargetsType(prm.TargetDB.DBAType.ToString(), "ODA", ref ODAColInfo);
+                                ODAdbType OdaType = (ODAdbType)Enum.Parse(typeof(ODAdbType), ODAColInfo.ColumnType, true);
+
+                                Oprms[j] = new ODAParameter()
+                                {
+                                    ColumnName = trgCol[j]["COLUMN_NAME"].ToString(),
+                                    DBDataType = OdaType,
+                                    Direction = ParameterDirection.Input,
+                                    ParamsName = trgCol[j]["COLUMN_NAME"].ToString(),
+                                    Size = collng
+                                };
+                            }
+
                             int total = 0;
                             int maxR = isBigData ? 50 : 10000;
                             int startIndx = 0;
