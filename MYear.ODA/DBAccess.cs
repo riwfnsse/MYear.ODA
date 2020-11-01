@@ -285,7 +285,7 @@ namespace MYear.ODA
             }
             else
             {
-                Cmd = this.GetConnection().CreateCommand();
+                Cmd = this.GetConnection().CreateCommand(); 
             }
             return Cmd;
         }
@@ -295,6 +295,7 @@ namespace MYear.ODA
             {
                 if (Cmd.Transaction == null)
                 {
+                    Cmd.Cancel(); 
                     Cmd.Connection.Close();
                     Cmd.Dispose();
                 }

@@ -41,12 +41,12 @@ EF生成的SQL有很多的转换，语句非常复杂，经常走不上索引，
  ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/ReadData.png)
 
 ### 读取单条数据记录
-Dapper比ODA 略胜一点，但预热时间（第一条）比较长，ODA 比 EF与SqlSugar的优势就很明显了;</br>
+Dapper比ODA 略胜一点，但预热时间（第一条）比较长，ODA 比 EF与SqlSugar有很明显的优势;</br>
 特别是EF相较其他差了好几倍。</br>
  ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/GetById.png)
-
+ 
 ### SQL生成性能
-Dapper、没有处功能不作对比；EF 语句生成速度，简直不忍直视。ODA 比 Sqlsugar 好几倍。
+Dapper、没有此功能不作对比；EF 语句生成速度，简直不忍直视。ODA 比 Sqlsugar 好几倍。
  ![image](https://github.com/riwfnsse/MYear.ODA/blob/master/MYear.PerformanceTest/Result/SQL.png)
 
 ### 查询分页
