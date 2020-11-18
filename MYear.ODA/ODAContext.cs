@@ -59,6 +59,7 @@ namespace MYear.ODA
                 }
             };
         }
+        public int CommandTimeOut { get; set; }
         public static void SetODAConfig(ODAConfiguration Config)
         {
             if (Config == null)
@@ -87,7 +88,7 @@ namespace MYear.ODA
         }
 
         private static double? _DBTimeDiff = null;
-        private static IDBAccess NewDBConnect(DbAType dbtype, string Connecting)
+        private IDBAccess NewDBConnect(DbAType dbtype, string Connecting)
         {
             IDBAccess DBA = null;
             switch (dbtype)
@@ -121,6 +122,8 @@ namespace MYear.ODA
                     break;
 
             }
+            if (this.CommandTimeOut != 0)
+                DBA.CommandTimeOut = this.CommandTimeOut;
             return DBA;
         }
         #endregion
@@ -161,7 +164,7 @@ namespace MYear.ODA
                     if (!_IsConfig)
                     {
                         if (string.IsNullOrWhiteSpace(_Conn.ConnectionString))
-                            _DBTimeDiff = (ODAContext.NewDBConnect(_Conn.DBtype, _Conn.ConnectionString).GetDBDateTime() - DateTime.Now).TotalSeconds;
+                            _DBTimeDiff = (NewDBConnect(_Conn.DBtype, _Conn.ConnectionString).GetDBDateTime() - DateTime.Now).TotalSeconds;
                     }
                     else if (ODAConfig != null)
                     {
@@ -169,7 +172,7 @@ namespace MYear.ODA
                         {
                             if (!string.IsNullOrWhiteSpace(ODAConfig.ODADataBase.ConnectionString))
                             {
-                                _DBTimeDiff = (ODAContext.NewDBConnect(ODAConfig.ODADataBase.DBtype, ODAConfig.ODADataBase.ConnectionString).GetDBDateTime() - DateTime.Now).TotalSeconds;
+                                _DBTimeDiff = (NewDBConnect(ODAConfig.ODADataBase.DBtype, ODAConfig.ODADataBase.ConnectionString).GetDBDateTime() - DateTime.Now).TotalSeconds;
                             }
                         }
                         else if (ODAConfig.DispersedDataBase != null && ODAConfig.DispersedDataBase.Length > 0)
@@ -178,7 +181,7 @@ namespace MYear.ODA
                             {
                                 if (!string.IsNullOrWhiteSpace(db.ConnectionString))
                                 {
-                                    _DBTimeDiff = (ODAContext.NewDBConnect(db.DBtype, db.ConnectionString).GetDBDateTime() - DateTime.Now).TotalSeconds;
+                                    _DBTimeDiff = (NewDBConnect(db.DBtype, db.ConnectionString).GetDBDateTime() - DateTime.Now).TotalSeconds;
                                 }
                                 break;
                             }
@@ -374,7 +377,7 @@ namespace MYear.ODA
             ODAConnect conn = GetConnect(ODASql);
             if (_Tran == null)
             {
-                return ODAContext.NewDBConnect(conn.DBtype, conn.ConnectionString);
+                return NewDBConnect(conn.DBtype, conn.ConnectionString);
             }
             else
             {
@@ -385,7 +388,7 @@ namespace MYear.ODA
                 }
                 else
                 {
-                    IDBAccess DBA = ODAContext.NewDBConnect(conn.DBtype, conn.ConnectionString);
+                    IDBAccess DBA = NewDBConnect(conn.DBtype, conn.ConnectionString);
                     DBA.BeginTransaction();
                     _Tran.DoCommit += DBA.Commit;
                     _Tran.RollBacking += DBA.RollBack;

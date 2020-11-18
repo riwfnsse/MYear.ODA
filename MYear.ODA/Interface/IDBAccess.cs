@@ -6,7 +6,8 @@ namespace MYear.ODA
 {
 
     public interface IDBAccess
-    {
+    { 
+        int CommandTimeOut { get; set; }
         char ParamsMark { get; }
         DbAType DBAType { get; }
         string ConnString { get; }

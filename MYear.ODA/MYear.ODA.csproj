@@ -6,7 +6,7 @@
       <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
       <Authors>Robin.zhu</Authors>
       <Company>MYear</Company> 
-      <FileVersion>1.7.5</FileVersion>
+      <FileVersion>1.7.6</FileVersion>
       <RootNamespace>MYear.ODA</RootNamespace>
       <PackageLicenseExpression>MIT</PackageLicenseExpression>
       <Title>MYear.ODA</Title>
@@ -15,10 +15,10 @@
       <PackageProjectUrl>https://github.com/riwfnsse/MYear.ODA</PackageProjectUrl>
       <Description>MYear.ODA is a high-performance ORM component for SqlServer / MySql /Oracle / DB2 /SQLite ;  It support .Net Framework / .NetCore /.NetStandard </Description>
       <RepositoryUrl>https://github.com/riwfnsse/MYear.ODA</RepositoryUrl>
-      <Version>1.7.5</Version>
+      <Version>1.7.6</Version>
       <PackageReleaseNotes>MYear.ODA is a high-performance ORM component for SqlServer / MySql /Oracle / DB2 /SQLite ;  It support .Net Framework / .NetCore /.NetStandard</PackageReleaseNotes>
       <PackageTags>orm asp.net .netcore .netstandard SqlServer MySql  Oracle  DB2 SQLite</PackageTags>
-      <AssemblyVersion>1.7.5.0</AssemblyVersion>
+      <AssemblyVersion>1.7.6.0</AssemblyVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)' == 'net40' or '$(TargetFramework)' == 'net46'">
       <DefineConstants>TRACE;NET_FW;</DefineConstants>

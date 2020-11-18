@@ -38,7 +38,8 @@ namespace MYear.ODA
         public virtual string[] ObjectFlag
         {
             get { return new string[] { "", "" }; }
-        }
+        } 
+        public int CommandTimeOut { get; set; }
         private string _ConnStr = null;
         public string ConnString { get { return _ConnStr; } }
        
@@ -287,6 +288,9 @@ namespace MYear.ODA
             {
                 Cmd = this.GetConnection().CreateCommand(); 
             }
+
+            if (this.CommandTimeOut != 0)
+                Cmd.CommandTimeout = this.CommandTimeOut;
             return Cmd;
         }
         protected void CloseCommand(IDbCommand Cmd)
